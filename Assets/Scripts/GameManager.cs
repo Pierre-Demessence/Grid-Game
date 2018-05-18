@@ -29,17 +29,17 @@ public class GameManager : MonoBehaviour
         get { return (int) _tilemap.layoutGrid.cellSize.x; }
     }
 
-    public bool CanMove(Vector3Int pos)
+    public bool CanMove(Vector2Int pos)
     {
-        if (_tilemap.GetColliderType(pos - new Vector3Int(0, 1, 0)) != Tile.ColliderType.None) return false;
+        if (_tilemap.GetColliderType((pos - new Vector2Int(0, 1)).ToVector3Int()) != Tile.ColliderType.None) return false;
         if (GetCharacter(pos)) return false;
         return true;        
     }
     
-    public Character GetCharacter(Vector3Int pos)
+    public Character GetCharacter(Vector2Int pos)
     {
-        if (_player.transform.position.Ceil().Equals(pos)) return _player;
-        return (_monsters.GetComponentsInChildren<Monster>().FirstOrDefault(monster => monster.transform.position.Ceil().Equals(pos)));
+        if (_player.Position.Equals(pos)) return _player;
+        return (_monsters.GetComponentsInChildren<Monster>().FirstOrDefault(monster => monster.Position.Equals(pos)));
     }
 
     private void Update()
@@ -50,13 +50,5 @@ public class GameManager : MonoBehaviour
         if (!_player.DoTurn()) return;
         foreach (var monster in _monsters.GetComponentsInChildren<Monster>())
             if (!monster.IsDead) monster.DoTurn();
-    }
-}
-
-public static class Vector3Ex
-{
-    public static Vector3 Ceil(this Vector3 vector3)
-    {
-        return new Vector3(Mathf.Ceil(vector3.x), Mathf.Ceil(vector3.y), Mathf.Ceil(vector3.z));
     }
 }

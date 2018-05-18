@@ -43,22 +43,22 @@ public class Player : Character
 
     public bool DoTurn()
     {
-        var dir = Vector2.zero;
+        var dir = Vector2Int.zero;
 
         if (Input.GetKey(KeyCode.UpArrow))
-            dir = Vector2.up;
+            dir = Vector2Int.up;
         if (Input.GetKey(KeyCode.DownArrow))
-            dir = Vector2.down;
+            dir = Vector2Int.down;
         if (Input.GetKey(KeyCode.LeftArrow))
-            dir = Vector2.left;
+            dir = Vector2Int.left;
         if (Input.GetKey(KeyCode.RightArrow))
-            dir = Vector2.right;
+            dir = Vector2Int.right;
         
         // Wait
         if (Input.GetKey(KeyCode.Space))
             return true;
 
-        if (dir == Vector2.zero) return false;
+        if (dir == Vector2Int.zero) return false;
 
         // Attack
         Character target;

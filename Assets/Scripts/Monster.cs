@@ -13,23 +13,23 @@ public class Monster : Character
 
     public void DoTurn()
     {
-        Vector2 dir;
+        Vector2Int dir;
         switch (Random.Range(0, 4))
         {
             case 0:
-                dir = Vector2.up;
+                dir = Vector2Int.up;
                 break;
             case 1:
-                dir = Vector2.right;
+                dir = Vector2Int.right;
                 break;
             case 2:
-                dir = Vector2.down;
+                dir = Vector2Int.down;
                 break;
             case 3:
-                dir = Vector2.left;
+                dir = Vector2Int.left;
                 break;
             default:
-                dir = Vector2.zero;
+                dir = Vector2Int.zero;
                 break;
         }
 

@@ -6,7 +6,7 @@ public abstract class Character : MonoBehaviour
 {
     private int _currentHealth;
 
-    private Vector3 _guiPos;
+    private Vector2Int _position;
 
     protected GameManager GameManager;
     
@@ -31,19 +31,31 @@ public abstract class Character : MonoBehaviour
 
     protected abstract int BaseDamage { get; }
 
+    public Vector2Int Position
+    {
+        get { return _position; }
+        private set
+        {
+            _position = value;
+            var transformPosition = new Vector3(Position.x, Position.y);
+            //transform.position = transformPosition;
+            transform.DOMove(transformPosition, 0.1250f);
+        }
+    }
+
     protected abstract void OnDeath();
 
     protected virtual void Start()
     {
-        _currentHealth = MaxHealth; 
+        _currentHealth = MaxHealth;
+        Position = new Vector2Int((int) transform.position.x, (int) transform.position.y);
         GameManager = FindObjectOfType<GameManager>();
     }
 
-    protected void Move(Vector2 dir)
+    protected void Move(Vector2Int dir)
     {
         if (CanMove(dir))
-            transform.DOMove(DirToPos(dir), 0.1250f);
-            //transform.position = DirToPos(dir);
+            Position = DirToPos(dir);
     }
 
     private void GetHit(int damage)
@@ -63,30 +75,27 @@ public abstract class Character : MonoBehaviour
     {
         GameManager.Log(Name + " attacks " + target.Name + " for " + Damage + " dmg.");
         target.GetHit(Damage);
+        transform.DOMove(target.Position.ToVector3Int(), 0.125f).onComplete = () => transform.DOMove(Position.ToVector3Int(), 0.125f);
     }
 
-    protected Vector3Int DirToPos(Vector2 dir)
+    protected Vector2Int DirToPos(Vector2Int dir)
     {
-        return Vector3Int.FloorToInt(transform.position + (Vector3) (dir * GameManager.MoveOffset));
+        return Vector2Int.FloorToInt(Position + dir * GameManager.MoveOffset);
     }
     
-    protected Vector3Int DirToPosCeil(Vector2 dir)
-    {
-        return Vector3Int.CeilToInt(transform.position + (Vector3) (dir * GameManager.MoveOffset));
-    }
 
-    protected bool CanMove(Vector2 dir)
+    protected bool CanMove(Vector2Int dir)
     {
-        return GameManager.CanMove(DirToPosCeil(dir));
+        return GameManager.CanMove(DirToPos(dir));
     }
 
     private void OnGUI()
     {
-        _guiPos = Camera.main.WorldToScreenPoint(transform.position);
+        var guiPos = Camera.main.WorldToScreenPoint(transform.position);
 
         const int guiWidth = 64;
         const int guiHeight = 20;
-        GUI.Box(new Rect(_guiPos.x - (guiWidth - 64) / 2, Screen.height - _guiPos.y - guiHeight - 20, guiWidth, guiHeight), Name);
-        GUI.Box(new Rect(_guiPos.x - (guiWidth - 64) / 2, Screen.height - _guiPos.y - guiHeight, guiWidth, guiHeight), _currentHealth + "/" + MaxHealth);
+        GUI.Box(new Rect(guiPos.x - (guiWidth - 64) / 2, Screen.height - guiPos.y - guiHeight - 20, guiWidth, guiHeight), Name);
+        GUI.Box(new Rect(guiPos.x - (guiWidth - 64) / 2, Screen.height - guiPos.y - guiHeight, guiWidth, guiHeight), _currentHealth + "/" + MaxHealth);
     }
 }
